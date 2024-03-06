@@ -160,6 +160,7 @@ async function writeGeopositionFile(dataObject) {
     csvData = headerInfo + csvData;
     const filePath = path.join(
       __dirname,
+      "public",
       "outputs",
       `${snvCode}_geoposition.csv`
     );
@@ -171,15 +172,17 @@ async function writeAssayFile(dataObject) {
   const snvCodes = Object.keys(dataObject);
 
   let csvData = "";
-  const headerInfo = `Name,StartKm,EndKm,StretchExtension,VehiclePlate,AssetType,Driver,StartLat,StartLong,EndLat,EndLong,Date,StartTime,EndTime\n`;
+  const headerInfo = `Name,StartKm,EndKm,StretchExtension,VehiclePlate,AssetType,Driver,StartPosition,EndPosition,Date,StartTime,EndTime\n`;
   csvData += headerInfo;
 
   for (let snvCode of snvCodes) {
     const assayData = dataObject[snvCode].assayData;
-    const line = `${assayData.name},${assayData.startKm},${assayData.endKm},${assayData.stretchExtension},${assayData.vehiclePlate},${assayData.assetType},${assayData.driver},${assayData.geoPositions.start.lat},${assayData.geoPositions.start.long},${assayData.geoPositions.end.lat},${assayData.geoPositions.end.long},${assayData.timeData.start.date},${assayData.timeData.start.time},${assayData.timeData.end.time}\n`;
+    const startPosition = `${assayData.geoPositions.start.lat},${assayData.geoPositions.start.long}`;
+    const endPosition = `${assayData.geoPositions.end.lat},${assayData.geoPositions.end.long}`;
+    const line = `${assayData.name},${assayData.startKm},${assayData.endKm},${assayData.stretchExtension},${assayData.vehiclePlate},${assayData.assetType},${assayData.driver},"${startPosition}","${endPosition}",${assayData.timeData.start.date},${assayData.timeData.start.time},${assayData.timeData.end.time}\n`;
     csvData += line;
   }
 
-  const filePath = path.join(__dirname, "outputs", "assay.csv");
+  const filePath = path.join(__dirname, "public", "outputs", "assay.csv");
   await fs.promises.writeFile(filePath, csvData);
 }
